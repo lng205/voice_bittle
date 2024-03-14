@@ -8,6 +8,13 @@ This projects intends to create a demo of a voice assistant for Bittle. The voic
 2. [x] Using LLM to understand natural language commands
 3. [x] Voice recognition
 
+## How to use
+
+1. Run `pip install -r requirements.txt`
+2. Add your xunfei APPID, APISERCET, XF_APIKEY and OPENAI_API_KEY to `key.py`
+3. Connect the robot to your computer
+4. Run `python dog.py`
+
 ## Ref
 
 [OpenCat](https://github.com/PetoiCamp/OpenCat/tree/main/serialMaster)

@@ -14,7 +14,7 @@ history = []
 def main():
     global goodPorts
     goodPorts = initBittle()
-    wsParam = Ws_Param(APPID=APPID, APISecret=APISERCET, APIKey=XF_APIKEY)
+    wsParam = Ws_Param(APPID=APPID, APISecret=APISERECT, APIKey=XF_APIKEY)
     wsUrl = wsParam.create_url()
     ws = websocket.WebSocketApp(
         wsUrl, on_message=on_message, on_error=on_error, on_close=on_close
@@ -30,8 +30,8 @@ def on_message(ws, message):
             for w in i["cw"]:
                 result += w["w"]
         result = result.strip("，。！？")
-        print("识别结果: " + result)
         if result:
+            print("识别结果: " + result)
             tool = tool_choice(result, tools, history)
             history.append({"role": "system", "content": result})
             arguments = json.loads(tool.arguments)
@@ -45,7 +45,7 @@ def on_message(ws, message):
 
 
 # 收到websocket关闭的处理
-def on_close(ws:websocket.WebSocketApp,a,b):
+def on_close(ws,a,b):
     ws.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
 
 

@@ -4,8 +4,8 @@ This projects intends to create a demo of a voice assistant for Bittle. The voic
 
 ## Roadmap
 
-1. [ ] Control the robot via serial communication
-2. [ ] Using LLM to understand natural language commands
+1. [x] Control the robot via serial communication
+2. [x] Using LLM to understand natural language commands
 3. [ ] Voice recognition
 
 ## Ref

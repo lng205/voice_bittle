@@ -1,5 +1,6 @@
 from openai import OpenAI
-client = OpenAI(api_key="APIKEY")
+from key import API_KEY
+client = OpenAI(api_key=API_KEY)
 
 from tools import tools
 from send_command import sendCommand, initBittle, closeBittle

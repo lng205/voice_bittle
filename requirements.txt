@@ -1,0 +1,5 @@
+openai
+pyserial
+pyaudio
+websocket
+websocket-client

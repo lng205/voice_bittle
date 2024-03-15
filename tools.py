@@ -2,6 +2,95 @@ tools = [
     {
         "type": "function",
         "function": {
+            "name": "m",
+            "descriptioin":
+            """
+            Moving the joints of the robot to a specific angle.
+            Your available joint servos are:
+            0: head,
+            8: Left Front Arm, 9: Right Front Arm, 10: Right Back Arm, 11: Left Back Arm,
+            12: Left Front Knee, 13: Right Front Knee, 14: Right Back Knee, 15: Left Back Knee,
+            E.g.:
+            ['m', [0, -20]]
+            0 indicates the index number of joint servo
+            20 indicates the rotation angle (this angle refers to the origin rather than additive).
+            The unit is in degrees.
+
+            ['m',  [0, 45, 0, -45, 0, 45, 0, -45]]
+            and these joint servo rotation commands are executed SEQUENTIALLY, not at the same time.
+            The meaning of this example is:
+            the joint servo with index number 0 is first rotated to the 45-degree position,
+            then rotated to the -45 degree position, and so on. After these motion commands are completed,
+            """,
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "string",
+                        "description": "The index number and rotation angle of the joint servo",
+                    }
+                }
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "i",
+            "description":
+            """
+            Issue multiple commands at one time.
+            Your available joint servos are:
+            0: head,
+            8: Left Front Arm, 9: Right Front Arm, 10: Right Back Arm, 11: Left Back Arm,
+            12: Left Front Knee, 13: Right Front Knee, 14: Right Back Knee, 15: Left Back Knee,
+            E.g.:
+            ['i', [ 8, -15, 9, -20]]
+            The meaning of this example is:
+            the joint servos with index numbers 8, 9 are rotated to the -15, -20 degree positions at the same time.
+            After these motion commands are completed,
+            """,
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "string",
+                        "description": "The index number and rotation angle of the joint servo",
+                    }
+                }
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "b",
+            "description":
+            """
+            Buzzer control.
+            E.g.:
+            ['b', [10,2]]
+            10 indicates the music tone
+            2 indicates the lengths of duration, corresponding to 1/duration second
+
+            ['b',[0, 1, 14, 8, 14, 8, 21, 8, 21, 8, 23, 8, 23, 8, 21, 4, 19, 8, 19, 8, 18, 8, 18, 8, 16, 8, 16, 8, 14, 4]]
+            0, 14, 14, 21... indicate the music tones
+            1, 8, 8, 8 indicates the lengths of duration, corresponding to 1/duration second
+            """,
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "string",
+                        "description": "The music tone and the lengths of duration",
+                    }
+                }
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "balance",
             "description": "Balance on one leg",
         }

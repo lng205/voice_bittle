@@ -4,9 +4,9 @@ import base64
 import hmac
 import json
 from urllib.parse import urlencode
-import time
 from wsgiref.handlers import format_date_time
 from datetime import datetime
+import time
 from time import mktime
 import _thread as thread
 
@@ -66,14 +66,28 @@ def on_close(ws,a,b):
 
 
 # 收到websocket连接建立的处理
-# 整个会话时长最多持续60s，或者超过10s未发送数据，服务端会主动断开连接。
 def on_open(ws):
-    def run(*args):
+    def run():
         frameSize = 1280  # Size of the audio frame
-        intervel = 0.04  # Time between sending audio (in seconds)
+        intervel = 0.04  # Length of the audio frame
         status = STATUS_FIRST_FRAME  # Status of the audio frame
 
-        # Setup PyAudio
+        # Common JSON structure for sending data
+        data_template = {
+            "common": {"app_id": APPID},
+            "business": {
+                "domain": "iat",
+                "language": "zh_cn",
+                "accent": "mandarin",
+                "vinfo": 1,
+                "vad_eos": 30000 # 整个会话时长最多持续60s，或者超过30s未发送数据，服务端会主动断开连接。
+            },
+            "data": {
+                "status": 0,  # This will be updated as needed
+                "format": "audio/L16;rate=16000",
+                "encoding": "raw"
+            }
+        }
         p = pyaudio.PyAudio()
         stream = p.open(format=pyaudio.paInt16,
                         channels=1,
@@ -83,23 +97,19 @@ def on_open(ws):
         while True:
             buf = stream.read(frameSize, exception_on_overflow=False)
             if not buf:
-                status = STATUS_LAST_FRAME
+                continue
 
-            # First frame
+            # Update the status and audio data in the template
+            data_template["data"]["status"] = 0 if status == STATUS_FIRST_FRAME else 1
+            data_template["data"]["audio"] = str(base64.b64encode(buf), 'utf-8')
+
+            ws.send(json.dumps(data_template))
+
+            # Update status after the first frame
             if status == STATUS_FIRST_FRAME:
-                d = {"common": {"app_id": APPID},
-                        "business": {"domain": "iat", "language": "zh_cn",
-                                     "accent": "mandarin", "vinfo":1,"vad_eos":10000},
-                        "data": {"status": 0, "format": "audio/L16;rate=16000",
-                                "audio": str(base64.b64encode(buf), 'utf-8'),
-                                "encoding": "raw"}}
-                ws.send(json.dumps(d))
                 status = STATUS_CONTINUE_FRAME
-            # Intermediate frames
-            elif status == STATUS_CONTINUE_FRAME:
-                d = {"data": {"status": 1, "format": "audio/L16;rate=16000",
-                                "audio": str(base64.b64encode(buf), 'utf-8'),
-                                "encoding": "raw"}}
-                ws.send(json.dumps(d))
+
+            time.sleep(intervel)
+            
 
     thread.start_new_thread(run, ())

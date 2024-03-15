@@ -14,5 +14,9 @@ def initBittle():
 def closeBittle(goodPorts):
     closeAllSerial(goodPorts)
 
-def sendCommand(goodPorts, command):
-    send(goodPorts, [command,0.1])
+def sendCommand(goodPorts, command, data = []):
+    if data:
+        print([command, data, 0.1])
+        send(goodPorts, [command, data, 0.1])
+    else:
+        send(goodPorts, [command, 0.1])

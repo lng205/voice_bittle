@@ -8,6 +8,8 @@ This projects intends to create a demo of a voice assistant for Bittle. The voic
 2. [x] Using LLM to understand natural language commands
 3. [x] Voice recognition
 
+4. [ ] TODO: handle the multithreading conflict. There are four tasks running in parallel: audio recoding, streaming voice recognition, LLM and serial communication. The current implementation is not stable.
+
 ## How to use
 
 1. Run `pip install -r requirements.txt`

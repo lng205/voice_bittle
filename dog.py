@@ -22,6 +22,7 @@ def main():
     ws.on_open = on_open
     ws.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
 
+
 def on_message(ws, message):
     try:
         data = json.loads(message)["data"]["result"]["ws"]
@@ -33,11 +34,11 @@ def on_message(ws, message):
         if result:
             print("识别结果: " + result)
             tool = tool_choice(result, tools, history)
-            history.append({"role": "system", "content": result})
+            history.append({"role": "user", "content": result})
             arguments = json.loads(tool.arguments)
             print(f"选择了{tool}")
             if not arguments:
-                sendCommand(goodPorts, 'k' + tool.name)
+                sendCommand(goodPorts, "k" + tool.name)
             else:
                 sendCommand(goodPorts, tool.name, eval(arguments["data"]))
     except Exception as e:
@@ -45,7 +46,7 @@ def on_message(ws, message):
 
 
 # 收到websocket关闭的处理
-def on_close(ws,a,b):
+def on_close(ws, a, b):
     ws.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
 
 

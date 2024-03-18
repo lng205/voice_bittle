@@ -7,8 +7,15 @@ This projects intends to create a demo of a voice assistant for Bittle. The voic
 1. [x] Control the robot via serial communication
 2. [x] Using LLM to understand natural language commands
 3. [x] Voice recognition
-
-4. [ ] TODO: handle the multithreading conflict. There are four tasks running in parallel: audio recoding, streaming voice recognition, LLM and serial communication. The current implementation is not stable.
+4. [ ] Transition to a domestic Large Language Model
+5. [ ] Fix the unidentified error that could break the program
+6. [ ] Implement an idle state; the robot should default to an idle state in the absence of commands
+7. [ ] Replace the robots main program with a custom program
+8. [ ] Refine texts prior to their submission to the LLM, entailing several brief statements into a singular, cohesive sentence
+9. [ ] Address the issue of the voice recognition server terminating the connection (Determine the optimal juncture for re-establishment, devise a strategy for reconnection, and formulate a method for recuperating lost data)
+10. [ ] The robot ought to emit preliminary feedback pending the LLM's reply
+11. [ ] (Experimental) Adjust the voice recognition server to discern the speaker's identity, thereby enabling it to exclusively acknowledge commands issued by the designated speaker
+12. [ ] Enhance the efficacy of multi-threading operations
 
 ## How to use
 

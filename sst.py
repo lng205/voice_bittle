@@ -27,7 +27,7 @@ class Ws_Param(object):
 
     # 生成url
     def create_url(self):
-        url = 'wss://ws-api.xfyun.cn/v2/iat'
+        url = 'wss://iat-api.xfyun.cn/v2/iat'
         # 生成RFC1123格式的时间戳
         now = datetime.now()
         date = format_date_time(mktime(now.timetuple()))
@@ -94,6 +94,7 @@ def on_open(ws):
                         rate=16000,
                         input=True,
                         frames_per_buffer=frameSize)
+        print("* 开始录音...")
         while True:
             buf = stream.read(frameSize, exception_on_overflow=False)
             if not buf:

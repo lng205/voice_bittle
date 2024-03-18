@@ -102,13 +102,13 @@ tools = [
             "description": "Butt up",
         }
     },
-    {
-        "type": "function",
-        "function": {
-            "name": "calib",
-            "description": "Calibrate the gyroscope",
-        }
-    },
+    # {
+    #     "type": "function",
+    #     "function": {
+    #         "name": "calib",
+    #         "description": "Calibrate the gyroscope",
+    #     }
+    # },
     {
         "type": "function",
         "function": {
@@ -361,18 +361,18 @@ tools = [
             "description": "Table",
         }
     },
-    {
-        "type": "function",
-        "function": {
-            "name": "ts",
-            "description": "Test servo",
-        }
-    },
+    # {
+    #     "type": "function",
+    #     "function": {
+    #         "name": "ts",
+    #         "description": "Test servo",
+    #     }
+    # },
     {
         "type": "function",
         "function": {
             "name": "wh",
-            "description": "Wave head",
+            "description": "Shake your head. This function can effectively express disagreement.",
         }
     },
     {

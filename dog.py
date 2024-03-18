@@ -4,7 +4,7 @@ from key import *
 client = OpenAI(api_key=OPENAI_API_KEY)
 
 from tools import tools, skillFullName
-from send_command import sendCommand, initBittle, closeBittle
+# from send_command import sendCommand, initBittle, closeBittle
 import websocket, ssl
 from sst import Ws_Param, on_open, on_error, json
 
@@ -12,8 +12,8 @@ history = []
 
 
 def main():
-    global goodPorts
-    goodPorts = initBittle()
+    # global goodPorts
+    # goodPorts = initBittle()
     wsParam = Ws_Param(APPID=APPID, APISecret=APISERECT, APIKey=XF_APIKEY)
     wsUrl = wsParam.create_url()
     ws = websocket.WebSocketApp(
@@ -37,10 +37,10 @@ def on_message(ws, message):
             history.append({"role": "user", "content": result})
             arguments = json.loads(tool.arguments)
             print(f"选择了{tool}")
-            if not arguments:
-                sendCommand(goodPorts, "k" + tool.name)
-            else:
-                sendCommand(goodPorts, tool.name, eval(arguments["data"]))
+            # if not arguments:
+            #     sendCommand(goodPorts, "k" + tool.name)
+            # else:
+            #     sendCommand(goodPorts, tool.name, eval(arguments["data"]))
     except Exception as e:
         print(e)
 

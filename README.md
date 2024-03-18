@@ -2,6 +2,10 @@
 
 This projects intends to create a demo of a voice assistant for Bittle. The voice assistant will be able to understand voice commands and execute them on the robot.
 
+## No-Bittle
+
+**This Branch disables the robot control, focusing on the voice recognition and LLM.**
+
 ## Roadmap
 
 1. [x] Control the robot via serial communication

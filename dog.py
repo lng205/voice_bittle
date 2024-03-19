@@ -59,8 +59,10 @@ def on_open(ws):
                 continue
 
             data_template["data"]["audio"] = str(base64.b64encode(buf), 'utf-8')
-
-            ws.send(json.dumps(data_template))
+            try:
+                ws.send(json.dumps(data_template))
+            except Exception as e:
+                print(e)
 
             if data_template["data"]["status"] == 0:
                 # Update status after the first frame

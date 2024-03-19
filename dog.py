@@ -41,14 +41,14 @@ def on_open(ws):
             },
             "data": {
                 "status": 0,
-                "format": "audio/L16;rate=16000",
+                "format": "audio/L16;rate=8000",
                 "encoding": "raw"
             }
         }
         p = pyaudio.PyAudio()
         stream = p.open(format=pyaudio.paInt16,
                         channels=1,
-                        rate=16000,
+                        rate=8000,
                         input=True,
                         frames_per_buffer=frameSize)
         print("* 开始录音...")

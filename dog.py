@@ -1,7 +1,10 @@
-from openai import OpenAI
+# from openai import OpenAI
+import zhipuai
+from zhipuai import ZhipuAI
 from key import *
 
-client = OpenAI(api_key=OPENAI_API_KEY)
+# client = OpenAI(api_key=OPENAI_API_KEY)
+client = ZhipuAI(api_key=ZHIPU_API_KEY)
 
 from tools import tools, skillFullName
 from send_command import sendCommand, initBittle, closeBittle
@@ -111,7 +114,7 @@ def tool_choice(message, tools, history):
     ]
 
     completion = client.chat.completions.create(
-        model="gpt-4-0125-preview", messages=messages, tools=tools, tool_choice="auto"
+        model="glm-4", messages=messages, tools=tools, tool_choice="auto"
     )
 
     return completion.choices[0].message.tool_calls[0].function

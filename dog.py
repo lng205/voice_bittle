@@ -16,8 +16,8 @@ history = []
 
 
 def main():
-    global goodPorts
-    goodPorts = initBittle()
+    # global goodPorts
+    # goodPorts = initBittle()
     wsParam = Ws_Param(APPID=APPID, APISecret=APISERECT, APIKey=XF_APIKEY)
     wsUrl = wsParam.create_url()
     ws = websocket.WebSocketApp(
@@ -92,10 +92,10 @@ def on_message(ws, message):
             history.append({"role": "user", "content": result})
             arguments = json.loads(tool.arguments)
             print(f"选择了{tool}")
-            if not arguments:
-                sendCommand(goodPorts, "k" + tool.name)
-            else:
-                sendCommand(goodPorts, tool.name, eval(arguments["data"]))
+            # if not arguments:
+            #     sendCommand(goodPorts, "k" + tool.name)
+            # else:
+            #     sendCommand(goodPorts, tool.name, eval(arguments["data"]))
     except Exception as e:
         print(e)
 
@@ -113,11 +113,18 @@ def tool_choice(message, tools, history):
         {"role": "user", "content": message},
     ]
 
-    completion = client.chat.completions.create(
-        model="glm-4", messages=messages, tools=tools, tool_choice="auto"
-    )
 
-    return completion.choices[0].message.tool_calls[0].function
+
+
+    response = client.chat.completions.create(
+                model="glm-4",
+                messages=messages,
+                tools=tools,
+                tool_choice="auto",
+            )
+    return response.choices[0].message
+
+        
 
 
 def on_error(ws, error):

@@ -1,3 +1,26 @@
+from openai import OpenAI
+from key import OPENAI_API_KEY
+
+client = OpenAI(api_key=OPENAI_API_KEY)
+
+def tool_choice(prompt, message, tools, history):
+    """
+    Send the message to the model with a list of tools and propmt the model to use the tools.
+    Tools is a list of dict describing functions.
+    Return the chosen function.
+    """
+    messages = [
+        {"role": "system", "content": prompt},
+        *history,
+        {"role": "user", "content": message},
+    ]
+
+    completion = client.chat.completions.create(
+        model="gpt-4-0125-preview", messages=messages, tools=tools, tool_choice="auto"
+    )
+
+    return completion.choices[0].message.tool_calls[0].function
+
 tools = [
     {
         "type": "function",

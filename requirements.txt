@@ -2,4 +2,4 @@ openai
 pyserial
 pyaudio
 websocket-client
-zhipuai
+# zhipuai

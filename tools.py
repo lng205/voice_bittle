@@ -1,11 +1,11 @@
-# from openai import OpenAI
-# from key import OPENAI_API_KEY
-from key import ZHIPU_API_KEY
+from openai import OpenAI
+from key import OPENAI_API_KEY
+# from key import ZHIPU_API_KEY
 from zhipuai import ZhipuAI
 
 
-# client = OpenAI(api_key=OPENAI_API_KEY)
-client = ZhipuAI(api_key=ZHIPU_API_KEY) 
+client = OpenAI(api_key=OPENAI_API_KEY)
+# client = ZhipuAI(api_key=ZHIPU_API_KEY) 
 
 def tool_choice(prompt, message, tools, history):
     """
@@ -19,14 +19,20 @@ def tool_choice(prompt, message, tools, history):
         {"role": "user", "content": message},
     ]
 
-    # completion = client.chat.completions.create(
-    #     model="gpt-4-0125-preview", messages=messages, tools=tools, tool_choice="auto"
-    # )
     completion = client.chat.completions.create(
-        model="glm-4", messages=messages, tools=tools, tool_choice="auto"
+        model="gpt-4-0125-preview", messages=messages, tools=tools, tool_choice="auto"
     )
+    # completion = client.chat.completions.create(
+    #     model="glm-4", messages=messages, tools=tools, tool_choice="auto"
+    # )
 
-    return completion.choices[0].message.tool_calls[0].function
+    try:
+        choice = completion.choices[0].message.tool_calls[0].function
+    except Exception as e:
+        print("小狗想说人话，但是失败了，因为建国后动物不许成精。")
+
+
+    return choice
 
 tools = [
     {

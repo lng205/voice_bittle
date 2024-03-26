@@ -20,8 +20,8 @@ def on_message(message):
         print("识别结果: " + result)
 
         # Beeping to indicate that the robot is listening
-        global goodPorts
-        sendCommand(goodPorts, "b", [10, 4])
+        # global goodPorts
+        # sendCommand(goodPorts, "b", [10, 4])
 
         # Ask LLM to choose a tool
         global history
@@ -31,14 +31,14 @@ def on_message(message):
         print(f"选择了{tool}")
 
         # Send the command to the robot
-        if not arguments:
-            sendCommand(goodPorts, "k" + tool.name)
-        else:
-            sendCommand(goodPorts, tool.name, eval(arguments["data"]))
+        # if not arguments:
+        #     sendCommand(goodPorts, "k" + tool.name)
+        # else:
+        #     sendCommand(goodPorts, tool.name, eval(arguments["data"]))
 
 
 if __name__ == "__main__":
-    goodPorts = initBittle()
+    # goodPorts = initBittle()
     audio_streamer = AudioStreamer(callback=on_message)
     print("开始录音")
     try:

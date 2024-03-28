@@ -33,8 +33,8 @@ prompt_judge = f'''
 6. 请以json的形式输出,格式如下:
 {{{{
     "type": "chat" or "game"  //根据User说的话判断他是在和小狗闲聊还是在玩海龟汤小游戏，如果他是在[猜测“小学生”怎么样]，或者提到[游戏]以及[tutrle_problem相关的问题]的时候就属于在game状态,相反如果提到[你]或者[小狗]则大概率是在chat
-    "thougts":chat模式下，请想象一下小狗会做的动作，参照tools列表调用动作，接收到的话可能会有个别字的错误，想象尽量理解语义，面对问句做出小狗真实的回复，实在理解不了的就显示"不做动作"；game模式下，输出作为海龟汤裁判员的思路，并且只能做nod，wavehead，jump三个动作。
-    "action": "Function(arguments='{0}', name='wh')"  //在这里根据thougts在tool_choice进行选择动作,如果thougts是“不做动作”那这个里面就是空值。返回需要调用的tools格式。
+    "thougts":chat模式下，请想象一下小狗会做的动作，参照tools列表调用动作，尽量理解语义，面对问句做出小狗真实的回复，实在理解不了的就thougts为"不做动作"；game模式下，输出作为海龟汤裁判员的思路，并且只能做nod，wavehead，jump三个动作。
+    "action": "Function(arguments='{0}', name='wh')"  //在这里根据thougts在tool_choice进行选择动作,如果thougts是“不做动作”那action就是{{}}。返回需要调用的tools格式。
 }}}}
 
 
@@ -95,12 +95,61 @@ def tool_choice(message, tools, history):
     try:
         choice =completion.choices[0].message.content
         # choice = completion.choices[0].message.tool_calls[0].function
+        
         print(f"-------------{choice}")
+        fixed_choice = ensure_json_wrapped_with_braces(choice)
     except Exception as e:
         print("小狗想说人话，但是失败了，因为建国后动物不许成精。")
 
 
-    return choice
+    return fixed_choice
+
+
+
+def ensure_json_wrapped_with_braces(json_str):
+    """
+    确保给定的JSON字符串以开放的大括号开始，以闭合的大括号结束。
+    
+    :param json_str: 需要检查和修改的JSON字符串。
+    :return: 修改后的JSON字符串。
+    """
+    # 去除字符串首尾的空格以准确检查首尾字符
+    trimmed_str = json_str.strip()
+    
+    # 检查字符串是否以开放的大括号开始
+    if not trimmed_str.startswith('{'):
+        # 如果不是，尝试找到第一个出现的 '{'
+        first_brace_pos = trimmed_str.find('{')
+        if first_brace_pos != -1:
+            # 如果找到了 '{'，从该位置开始截取字符串
+            print("这个字符串开头不是{，已经截取成功")
+            trimmed_str = trimmed_str[first_brace_pos:]
+        else:
+            # 如果没有找到 '{'，则在开始位置添加 '{'
+            print("这个json没有{，成功查漏补缺")
+            trimmed_str = '{' + trimmed_str
+    else:
+        print("-----------")
+    
+    # 检查字符串是否以闭合的大括号结束
+    if not trimmed_str.endswith('}'):
+        # 如果不是，尝试找到最后一个出现的 '}'
+        last_brace_pos = trimmed_str.rfind('}')
+        if last_brace_pos != -1:
+            # 如果找到了 '}'，截取到该位置
+            trimmed_str = trimmed_str[:last_brace_pos+1]
+        else:
+            # 如果没有找到 '}'，则在末尾位置添加 '}'
+            # print("这个json没有}，成功查漏补缺")
+            trimmed_str += '}'
+    else:
+        print("-----------")
+       
+    
+    return trimmed_str
+
+
+
 
 tools = [
     {

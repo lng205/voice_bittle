@@ -53,7 +53,7 @@ dogfewshot2= '''
 {
     "type": "chat",  
     "thougts": "他在对我讲话，小狗没有吃饭",
-    "action": Function(arguments='{}', name='wh')
+    "action": {"arguments": "{}", "name": "wh"}
 }
 '''
 
@@ -62,7 +62,7 @@ dogfewshot3= '''
 {
     "type": "game",  
     "thougts": "他在和我玩海龟汤，这个符合正确答案，他答对了",
-    "action": Function(arguments='{}', name='jump')
+    "action": {"arguments": "{}", "name": "jmp"}
 }
 '''
 

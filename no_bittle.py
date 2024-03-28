@@ -27,8 +27,14 @@ def on_message(message):
         global history
         tool = tool_choice(result, tools, history)
         history.append({"role": "user", "content": result})
-        tool = json.loads(tool)
-        print(f"选择了{tool["action"]["name"]}")
+        # print(f"选择了{tool["action"]["name"]}")
+        arguments, name = parse_action(tool)
+        if name:
+            print(f"选择了{name}")
+            
+        
+        
+        
         # print(f"选择了{arguments}")
 
         # # Send the command to the robot
@@ -36,6 +42,20 @@ def on_message(message):
         #     sendCommand(goodPorts, "k" + tool.name)
         # else:
         #     sendCommand(goodPorts, tool.name, eval(arguments["data"]))
+def parse_action(action_data):
+    try:
+        # 尝试解析 action 中的 arguments 字段
+        action_data = json.loads(action_data)
+        arguments = json.loads(action_data.get('arguments', '{}'))
+        name = action_data.get('name', 'none')
+        
+        # 根据 'name' 字段的值判断动作
+        if name == 'none':
+            return None  # 没有动作
+        else:
+            return arguments, name
+    except json.JSONDecodeError:
+        return None  # 解析错误，视为没有动作
 
 
 if __name__ == "__main__":

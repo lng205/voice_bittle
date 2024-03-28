@@ -16,6 +16,11 @@ turtle_rules = '''当User在和你询问关于海龟汤这个问题的时候,你
 如果点头就说明我说的话和turtle_answer里面的内容有一样或者类似的部分,如果摇头就说明我说的话和turtle_answer里面不一致,只有当我说出[他在办公室的时候],才能判断我是完全完全猜出了答案,才可以jmp跳跃结束本局游戏。
 '''
 #   a)type: ignore [User有可能会发出来很多声音,如果你判断他不是在对你讲话的话,那你就不用做任何动作]
+# {{{{
+#     "type": "chat" or "game"  //根据User说的话判断他是在和小狗闲聊还是在玩海龟汤小游戏，如果他是在[猜测“小学生”怎么样]，或者提到[游戏]以及[tutrle_problem相关的问题]的时候就属于在game状态,相反如果提到[你]或者[小狗]则大概率是在chat
+#     "thougts":chat模式下，请想象一下小狗会做的动作，参照tools列表调用动作，尽量理解语义，面对问句做出小狗真实的回复，实在理解不了的就thougts为"不做动作"；game模式下，输出作为海龟汤裁判员的思路，并且只能做nod，wavehead，jump三个动作。
+#     "action": {"arguments": "{0}", "name": "nd"}//在这里根据thougts在tool_choice进行选择动作,如果thougts是“不做动作”那action就是{"arguments": "{{}}", "name": "none"}。返回需要调用的tools格式。
+# }}}}
 
 prompt_judge = f'''
 你是一个小狗,你可以做出各种可爱狗狗的动作,同时你也通过你的肢体语言在和User玩海龟汤游戏,请根据海龟汤题目{turtle_problem}、正确答案{turtle_answer}和User的猜测做出对应的动作。
@@ -30,21 +35,27 @@ prompt_judge = f'''
 3. 不要输出任何其他文字和标点符号。
 4. 不要输出非以下范围内的内容:“是”、“不是”、“不相关”、“成功”。不要输出“是的”、“否”、“没有”等等。
 5. 对于不影响答案情景的问题,请输出"不相关"。
+7.- 当用户的对话与游戏无关时，`type` 应为 "chat"，并根据对话内容选择适当的动作。
+- 当用户提出与海龟汤游戏相关的问题时，`type` 应为 "game"，并根据用户的猜测选择 nod，wavehead，jump 中的一个动作来反映判断结果。
+
 6. 请以json的形式输出,格式如下:
-{{{{
-    "type": "chat" or "game"  //根据User说的话判断他是在和小狗闲聊还是在玩海龟汤小游戏，如果他是在[猜测“小学生”怎么样]，或者提到[游戏]以及[tutrle_problem相关的问题]的时候就属于在game状态,相反如果提到[你]或者[小狗]则大概率是在chat
-    "thougts":chat模式下，请想象一下小狗会做的动作，参照tools列表调用动作，尽量理解语义，面对问句做出小狗真实的回复，实在理解不了的就thougts为"不做动作"；game模式下，输出作为海龟汤裁判员的思路，并且只能做nod，wavehead，jump三个动作。
-    "action": "Function(arguments='{0}', name='wh')"  //在这里根据thougts在tool_choice进行选择动作,如果thougts是“不做动作”那action就是{{}}。返回需要调用的tools格式。
-}}}}
+输出格式应为：
+{{
+  "type": "chat",
+  "thoughts": "在 chat 模式下，根据对话内容想象小狗可能的动作。在 game 模式下，输出裁判的思路。",
+  "action": {{
+    "arguments": "0",
+    "name": "相应的动作名"
+  }}
+}}'''
 
 
-'''
 Userfewshot1 = '''User:看上去不错'''
 dogfewshot1 = '''
 {
-    "type": "ignore",  
+    "type": "chat",  
     "thougts": "他不是在对我讲话",
-    "action": "Function(arguments='{}', name='Nonetype')"
+    "action": {"arguments": "{}", "name": "none"}
 }
 '''
 Userfewshot2 = '''User:小狗小狗你吃饭了吗'''
@@ -75,8 +86,8 @@ def tool_choice(message, tools, history):
     """
     messages = [
         {"role": "system", "content": prompt_judge},
-        # {"role": "user", "content": Userfewshot1},
-        # {"role": "assistant", "content": dogfewshot1},
+        {"role": "user", "content": Userfewshot1},
+        {"role": "assistant", "content": dogfewshot1},
          {"role": "user", "content": Userfewshot2},
         {"role": "assistant", "content": dogfewshot2},
          {"role": "user", "content": Userfewshot3},

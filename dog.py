@@ -4,7 +4,9 @@ import json
 from send_command import sendCommand, initBittle, closeBittle
 import time
 
-prompt = "你是一只机器小狗，你不会说话，请不要给response，永远用tool_choice操作。你只能从给出的tools中进行选择。"
+
+
+
 history = []
 goodPorts = None
 
@@ -14,18 +16,18 @@ def on_message(message):
         for i in message["ws"]:
             for w in i["cw"]:
                 result += w["w"]
-        result = result.strip("，。！？")
+        result = result.strip(",。！？")
 
     if result:
         print("识别结果: " + result)
 
         # Beeping to indicate that the robot is listening
-        global goodPorts
-        sendCommand(goodPorts, "b", [10, 4])
+        # global goodPorts
+        # sendCommand(goodPorts, "b", [10, 4])
 
         # Ask LLM to choose a tool
         global history
-        tool = tool_choice(prompt, result, tools, history)
+        tool = tool_choice(result, tools, history)
         history.append({"role": "user", "content": result})
         arguments = json.loads(tool.arguments)
         print(f"选择了{tool}")

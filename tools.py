@@ -7,14 +7,81 @@ from zhipuai import ZhipuAI
 client = OpenAI(api_key=OPENAI_API_KEY)
 # client = ZhipuAI(api_key=ZHIPU_API_KEY) 
 
-def tool_choice(prompt, message, tools, history):
+turtle_problem='''今天你被叫到香蜜湖小学调查一起神秘的失踪案。一名小学生在课间休息时突然消失了。学校里没有监控摄像头,也没有目击者。你在操场上发现了一块巧克力包装纸,一本打开的图画书,以及一串小小的脚印。而我们现在已经成功找到了这位小朋友,请问是在哪里找到的他呢
+'''
+
+turtle_answer =''' 他在操场上偷吃巧克力看漫画书被老师发现了,在办公室被老师罚站呢'''
+
+turtle_rules = '''当User在和你询问关于海龟汤这个问题的时候,你只能做三个动作,也即调用三个tools: 点头nod,摇头wavehead,以及jump跳跃。
+如果点头就说明我说的话和turtle_answer里面的内容一致,如果摇头就说明我说的话和turtle_answer里面不一致,如果跳跃就说明我已经完全猜出了答案,可以结束本局游戏。
+'''
+#   a)type: ignore [User有可能会发出来很多声音,如果你判断他不是在对你讲话的话,那你就不用做任何动作]
+
+prompt_judge = f'''
+你是一个小狗,你可以做出各种可爱狗狗的动作,同时你也通过你的肢体语言在和User玩海龟汤游戏,请根据海龟汤题目{turtle_problem}、正确答案{turtle_answer}和User的猜测做出对应的动作。
+## 要求
+0.仔细判断User和你讲话的内容
+ 
+    b)type:thougts [User在和你说话,但并不是在和你聊关于海龟汤的内容,那你就根据User的讲话内容,做出符合狗狗的行为;]
+    c)type:game [User在问你关于海龟汤任务的问题,那么此时请你参照{turtle_rules}调用动作]
+
+1. 你需要在回答之前思考当前回答的思路。思路应当简短,但不应是重复问题内容。如果玩家思路基本正确,你需要在思路中说明玩家还有什么剩余的需要猜测的内容,或者说明已经完全猜出了答案。
+
+2. 你需要在回答之前提供你的思路,说明为什么你选择当前回答。思路应当简短,但不应是重复问题内容。如果玩家思路基本正确,你需要在思路中说明玩家还有什么剩余的需要猜测的内容,或者说明已经完全猜出了答案。
+3. 不要输出任何其他文字和标点符号。
+4. 不要输出非以下范围内的内容:“是”、“不是”、“不相关”、“成功”。不要输出“是的”、“否”、“没有”等等。
+5. 对于不影响答案情景的问题,请输出"不相关"。
+6. 请以json的形式输出,格式如下:
+{{{{
+    "type": "chat" or "game"  //根据User说的话判断他是在和小狗闲聊还是在玩海龟汤小游戏，当提到游戏的时候或者tutrle_problem相关的问题的时候就属于在game状态
+    "thougts":chat模式下，请想象一下小狗会做的动作，如果接收到的话很离谱的话就显示"不做动作"；game模式下，输出作为海龟汤裁判员的思路，并且只能做nod，wavehead，jump三个动作。
+    "action": "Function(arguments='{0}', name='wh')"  //在这里根据thougts在tool_choice进行选择动作,如果thougts是“不做动作”那这个里面就是空值。返回需要调用的tools格式。
+}}}}
+
+
+'''
+Userfewshot1 = '''User:看上去不错'''
+dogfewshot1 = '''
+{
+    "type": "ignore",  
+    "thougts": "他不是在对我讲话",
+    "action": "Function(arguments='{}', name='Nonetype')"
+}
+'''
+Userfewshot2 = '''User:小狗小狗你吃饭了吗'''
+dogfewshot2= '''
+{
+    "type": "chat",  
+    "thougts": "他在对我讲话，小狗没有吃饭",
+    "action": Function(arguments='{}', name='wh')
+}
+'''
+
+Userfewshot3 = '''User:所以这个小学生是不是最后在老师发现的办公室里面'''
+dogfewshot3= '''
+{
+    "type": "game",  
+    "thougts": "他在和我玩海龟汤，这个符合正确答案，他答对了",
+    "action": Function(arguments='{}', name='jump')
+}
+'''
+
+
+
+def tool_choice(message, tools, history):
     """
     Send the message to the model with a list of tools and propmt the model to use the tools.
     Tools is a list of dict describing functions.
     Return the chosen function.
     """
     messages = [
-        {"role": "system", "content": prompt},
+        {"role": "system", "content": prompt_judge},
+        # {"role": "user", "content": Userfewshot1},
+        # {"role": "assistant", "content": dogfewshot1},
+         {"role": "user", "content": Userfewshot2},
+        {"role": "assistant", "content": dogfewshot2},
+         {"role": "user", "content": Userfewshot3},
+        {"role": "assistant", "content": dogfewshot3},
         *history,
         {"role": "user", "content": message},
     ]
@@ -27,7 +94,9 @@ def tool_choice(prompt, message, tools, history):
     # )
 
     try:
-        choice = completion.choices[0].message.tool_calls[0].function
+        choice =completion.choices[0].message.content
+        # choice = completion.choices[0].message.tool_calls[0].function
+        print(f"-------------{choice}")
     except Exception as e:
         print("小狗想说人话，但是失败了，因为建国后动物不许成精。")
 

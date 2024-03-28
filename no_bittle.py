@@ -27,8 +27,9 @@ def on_message(message):
         global history
         tool = tool_choice(result, tools, history)
         history.append({"role": "user", "content": result})
-        # arguments = json.loads(tool.arguments)
-        # print(f"选择了{tool}")
+        tool = json.loads(tool)
+        print(f"选择了{tool["action"]["name"]}")
+        # print(f"选择了{arguments}")
 
         # # Send the command to the robot
         # if not arguments:

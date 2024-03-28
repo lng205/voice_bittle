@@ -25,10 +25,10 @@ def on_message(message):
 
         # Ask LLM to choose a tool
         global history
-        tool = tool_choice(prompt, result, tools, history)
+        tool = tool_choice(result, tools, history)
         history.append({"role": "user", "content": result})
-        arguments = json.loads(tool.arguments)
-        print(f"选择了{tool}")
+        # arguments = json.loads(tool.arguments)
+        # print(f"选择了{tool}")
 
         # # Send the command to the robot
         # if not arguments:

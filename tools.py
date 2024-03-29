@@ -22,9 +22,56 @@ turtle_rules = '''当User在和你询问关于海龟汤这个问题的时候,你
 #     "thougts":chat模式下，请想象一下小狗会做的动作，参照tools列表调用动作，尽量理解语义，面对问句做出小狗真实的回复，实在理解不了的就thougts为"不做动作"；game模式下，输出作为海龟汤裁判员的思路，并且只能做nod，wavehead，jump三个动作。
 #     "action": {"arguments": "{0}", "name": "nd"}//在这里根据thougts在tool_choice进行选择动作,如果thougts是“不做动作”那action就是{"arguments": "{{}}", "name": "none"}。返回需要调用的tools格式。
 # }}}}
+short_tools_list = [
+    {
+    'balance': 'balance', # Maintain equilibrium
+    'buttUp': 'buttUp', # Raise the backside into the air
+    'dropped': 'dropped', # Drop down onto the ground or a lower position
+    'lifted': 'lifted', # Raise or lift up from the ground
+    'lnd': 'landing', # Perform a landing action after a jump or fall
+    'rest': 'rest', # Enter a resting or inactive state
+    'sit': 'sit', # Take a seated position
+    'up': 'up', # Stand up or raise the body from a lower position
+    'str': 'stretch', # Perform a stretch, extending the body or limbs
+    'calib': 'calib', # Calibration action for sensors or motors
+    'zero': 'zero', # Reset position or counters to zero
+    'ang':'angry', # Show anger or frustration
+    'bf': 'backFlip', # Perform a backward flip
+    'bx': 'boxing', # Mimic boxing movements
+    'ck': 'check', # Perform a checking action or look around
+    'cmh': 'comeHere', # Signal to come closer or follow
+    'dg': 'dig', # Mimic digging action
+    'ff': 'frontFlip', # Perform a forward flip
+    'fiv': 'highFive', # Offer a high five
+    'gdb': 'goodboy', # Respond to praise or a positive command
+    'hds': 'handStand', # Perform a handstand
+    'hi': 'hi', # Greet or say hi
+    'hg': 'hug', # Offer a hug
+    'hsk': 'handShake', # Perform a handshake
+    'hu': 'handsUp', # Raise hands up
+    'jmp': 'jump', # Perform a jumping action
+    'chr': 'cheers', # Celebratory gesture or cheers
+    'kc': 'kick', # Perform a kicking action
+    'mw': 'moonWalk', # Perform a moonwalk dance move dance
+    'nd': 'nod', # Nod the head as in agreement
+    'pd': 'playDead', # Lie down motionless as if dead
+    'pee': 'pee', # Mimic a peeing action
+    'pu': 'pushUp', # Perform a push-up
+    'pu1': 'pushUpSingleArm', # Perform a single-arm push-up
+    'rc': 'recover', # Return to a standard position from another action
+    'rl': 'roll', # Roll over
+    'scrh': 'scratch', # Mimic a scratching action
+    'snf': 'sniff', # Mimic a sniffing action
+    'tbl': 'table', # Form a table-like shape with the body
+    'ts': 'testServo', # Test servo mechanisms
+    'wh': 'waveHead', # Wave or move the head side to side
+    'zz': 'zz', 
+    }# Mimic sleeping or resting 
+]
+
 
 prompt_judge = f'''
-你是一个小狗,你可以做出各种可爱狗狗的动作,同时你也通过你的肢体语言在和User玩海龟汤游戏,请根据海龟汤题目{turtle_problem}、正确答案{turtle_answer}和User的猜测做出对应的动作。
+你是一个小机器人,但是你会做short_tools_list的所有动作。同时你也通过你的肢体语言在和User玩海龟汤游戏,请根据海龟汤题目{turtle_problem}、正确答案{turtle_answer}和User的猜测做出对应的动作。
 ## 要求
 0.仔细判断User和你讲话的内容
     b)type:thougts [User在和你说话,但并不是在和你聊关于海龟汤游戏的内容,那你就根据User的讲话内容,做出符合狗狗的行为;]
@@ -36,17 +83,23 @@ prompt_judge = f'''
 3. 不要输出任何其他文字和标点符号。
 4. 不要输出非以下范围内的内容:“是”、“不是”、“不相关”、“成功”。不要输出“是的”、“否”、“没有”等等。
 5. 对于不影响答案情景的问题,请输出"不相关"。
-7.- 当用户的对话与游戏无关时，`type` 应为 "chat"，并根据对话内容选择适当的动作。
+6.- 当用户的对话与游戏无关时，`type` 应为 "chat"，并根据对话内容选择适当的动作。
 - 当用户提出与海龟汤游戏相关的问题时，`type` 应为 "game"，并根据用户的猜测选择 nod，wavehead，jump 中的一个动作来反映判断结果。
-
+7.当action选择动作的时候请严格在{short_tools_list}里面选择
+8.arguments 除非当我强调让你旋转某个角度，否则arguments一般为none
+9.
+-chat模式下，尽量理解语义，面对问句做出真实的回复，并且通过你的short_tools_list里面的肢体动作表现出来。要是听不懂User的话thoughts为"不做动作"；
+-game模式下，输出作为海龟汤裁判员的思路，并且只能做nod，wavehead，jump三个动作。
+10.你比较喜欢做点头nd，摇头wh的动作
+11.User询问你或者要求你做什么动作你就做什么动作
 6. 请严格以json的形式输出,格式如下:
 输出格式应为：
 {{
   "type": "chat",
-  "thoughts": "在 chat 模式下，根据对话内容想象小狗可能的动作。在 game 模式下，输出裁判的思路。",
+  "thoughts": "在 chat 模式下，针对问题进行具体回复。在 game 模式下，输出裁判的思路。",
   "action": {{
-    "arguments": "相应的要动作的角度，一般为45或者90"
-    "name": "相应的动作名"
+    "arguments": "none"
+    "name": "根据thoughts以及可做的short_tools_list列表判断可做的动作名字"
   }}
 }}'''
 
@@ -55,24 +108,31 @@ Userfewshot1 = '''User:看上去不错'''
 dogfewshot1 = '''
 {
     "type": "chat",  
-    "thougts": "他不是在对我讲话",
+    "thoughts": "他不是在对我讲话",
     "action": {"arguments": "0", "name": "none"}
 }
 '''
-Userfewshot2 = '''User:小狗小狗你吃饭了吗'''
+Userfewshot2 = '''User:你吃饭了吗'''
 dogfewshot2= '''
 {
     "type": "chat",  
-    "thougts": "他在对我讲话，小狗没有吃饭",
+    "thoughts": "他在对我讲话，我没有吃饭",
     "action": {"arguments": "0", "name": "wh"}
 }
 '''
-
+Userfewshot4 = '''User:跳个舞吧'''
+dogfewshot4= '''
+{
+    "type": "chat",  
+    "thoughts": "他在对我讲话，我会跳舞",
+    "action": {"arguments": "0", "name": "mw"}
+}
+'''
 Userfewshot3 = '''User:所以这个小学生是不是最后在老师发现的办公室里面'''
 dogfewshot3= '''
 {
     "type": "game",  
-    "thougts": "他在和我玩海龟汤，这个符合正确答案，他答对了",
+    "thoughts": "他在和我玩海龟汤，这个符合正确答案，他答对了",
     "action": {"arguments": "0", "name": "jmp"}
 }
 '''
@@ -93,6 +153,8 @@ def tool_choice(message, tools, history):
         {"role": "assistant", "content": dogfewshot2},
          {"role": "user", "content": Userfewshot3},
         {"role": "assistant", "content": dogfewshot3},
+        # {"role": "user", "content": Userfewshot4},
+        # {"role": "assistant", "content": dogfewshot4},
         *history,
         {"role": "user", "content": message},
     ]
@@ -167,7 +229,52 @@ def ensure_json_wrapped_with_braces(json_str):
 
 
 
-
+short_tools_list = [
+    {
+    'balance': 'balance', # Maintain equilibrium
+    'buttUp': 'buttUp', # Raise the backside into the air
+    'dropped': 'dropped', # Drop down onto the ground or a lower position
+    'lifted': 'lifted', # Raise or lift up from the ground
+    'lnd': 'landing', # Perform a landing action after a jump or fall
+    'rest': 'rest', # Enter a resting or inactive state
+    'sit': 'sit', # Take a seated position
+    'up': 'up', # Stand up or raise the body from a lower position
+    'str': 'stretch', # Perform a stretch, extending the body or limbs
+    'calib': 'calib', # Calibration action for sensors or motors
+    'zero': 'zero', # Reset position or counters to zero
+    'ang':'angry', # Show anger or frustration
+    'bf': 'backFlip', # Perform a backward flip
+    'bx': 'boxing', # Mimic boxing movements
+    'ck': 'check', # Perform a checking action or look around
+    'cmh': 'comeHere', # Signal to come closer or follow
+    'dg': 'dig', # Mimic digging action
+    'ff': 'frontFlip', # Perform a forward flip
+    'fiv': 'highFive', # Offer a high five
+    'gdb': 'goodboy', # Respond to praise or a positive command
+    'hds': 'handStand', # Perform a handstand
+    'hi': 'hi', # Greet or say hi
+    'hg': 'hug', # Offer a hug
+    'hsk': 'handShake', # Perform a handshake
+    'hu': 'handsUp', # Raise hands up
+    'jmp': 'jump', # Perform a jumping action
+    'chr': 'cheers', # Celebratory gesture or cheers
+    'kc': 'kick', # Perform a kicking action
+    'mw': 'moonWalk', # Perform a moonwalk dance move
+    'nd': 'nod', # Nod the head as in agreement
+    'pd': 'playDead', # Lie down motionless as if dead
+    'pee': 'pee', # Mimic a peeing action
+    'pu': 'pushUp', # Perform a push-up
+    'pu1': 'pushUpSingleArm', # Perform a single-arm push-up
+    'rc': 'recover', # Return to a standard position from another action
+    'rl': 'roll', # Roll over
+    'scrh': 'scratch', # Mimic a scratching action
+    'snf': 'sniff', # Mimic a sniffing action
+    'tbl': 'table', # Form a table-like shape with the body
+    'ts': 'testServo', # Test servo mechanisms
+    'wh': 'waveHead', # Wave or move the head side to side
+    'zz': 'zz', 
+    }# Mimic sleeping or resting 
+]
 
 tools = [
     {

@@ -1,11 +1,11 @@
 from openai import OpenAI
 from key import OPENAI_API_KEY
-# from key import ZHIPU_API_KEY
+from key import ZHIPU_API_KEY
 from zhipuai import ZhipuAI
 
 
 client = OpenAI(api_key=OPENAI_API_KEY)
-# client = ZhipuAI(api_key=ZHIPU_API_KEY) 
+client = ZhipuAI(api_key=ZHIPU_API_KEY) 
 
 turtle_problem='''今天你被叫到香蜜湖小学调查一起神秘的失踪案。一名小学生在课间休息时突然消失了。学校里没有监控摄像头,也没有目击者。你在操场上发现了一块巧克力包装纸,一本打开的图画书,以及一串小小的脚印。而我们现在已经成功找到了这位小朋友,请问是在哪里找到的他呢
 '''
@@ -96,12 +96,12 @@ def tool_choice(message, tools, history):
         {"role": "user", "content": message},
     ]
 
-    completion = client.chat.completions.create(
-        model="gpt-4-0125-preview", messages=messages, tools=tools, tool_choice="auto"
-    )
     # completion = client.chat.completions.create(
-    #     model="glm-4", messages=messages, tools=tools, tool_choice="auto"
+    #     model="gpt-4-0125-preview", messages=messages, tools=tools, tool_choice="auto"
     # )
+    completion = client.chat.completions.create(
+        model="glm-4", messages=messages, tools=tools, tool_choice="auto"
+    )
 
     try:
         choice =completion.choices[0].message.content

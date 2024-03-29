@@ -28,7 +28,7 @@ def on_message(message):
         tool = tool_choice(result, tools, history)
         history.append({"role": "user", "content": result})
         # print(f"选择了{tool["action"]["name"]}")
-        arguments, name = parse_action(tool)
+        name = parse_action(tool)
         if name:
             print(f"选择了{name}")
             
@@ -45,15 +45,20 @@ def on_message(message):
 def parse_action(action_data):
     try:
         # 尝试解析 action 中的 arguments 字段
+        print(f"Received action_data: {action_data}")  # 添加这行来调试
+        global arguments
         action_data = json.loads(action_data)
-        arguments = json.loads(action_data.get('arguments', '{}'))
+        arguments = action_data.get('arguments', 'none')
         name = action_data.get('name', 'none')
+        
+        
+        print(f'''{name}++++++++++++++''')
         
         # 根据 'name' 字段的值判断动作
         if name == 'none':
             return None  # 没有动作
         else:
-            return arguments, name
+            return name
     except json.JSONDecodeError:
         return None  # 解析错误，视为没有动作
 

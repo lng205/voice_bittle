@@ -2,9 +2,10 @@ from openai import OpenAI
 from key import OPENAI_API_KEY
 from key import ZHIPU_API_KEY
 from zhipuai import ZhipuAI
+import json
 
 
-client = OpenAI(api_key=OPENAI_API_KEY)
+# client = OpenAI(api_key=OPENAI_API_KEY)
 client = ZhipuAI(api_key=ZHIPU_API_KEY) 
 
 turtle_problem='''今天你被叫到香蜜湖小学调查一起神秘的失踪案。一名小学生在课间休息时突然消失了。学校里没有监控摄像头,也没有目击者。你在操场上发现了一块巧克力包装纸,一本打开的图画书,以及一串小小的脚印。而我们现在已经成功找到了这位小朋友,请问是在哪里找到的他呢
@@ -38,13 +39,13 @@ prompt_judge = f'''
 7.- 当用户的对话与游戏无关时，`type` 应为 "chat"，并根据对话内容选择适当的动作。
 - 当用户提出与海龟汤游戏相关的问题时，`type` 应为 "game"，并根据用户的猜测选择 nod，wavehead，jump 中的一个动作来反映判断结果。
 
-6. 请以json的形式输出,格式如下:
+6. 请严格以json的形式输出,格式如下:
 输出格式应为：
 {{
   "type": "chat",
   "thoughts": "在 chat 模式下，根据对话内容想象小狗可能的动作。在 game 模式下，输出裁判的思路。",
   "action": {{
-    "arguments": "0",
+    "arguments": "相应的要动作的角度，一般为45或者90"
     "name": "相应的动作名"
   }}
 }}'''
@@ -55,7 +56,7 @@ dogfewshot1 = '''
 {
     "type": "chat",  
     "thougts": "他不是在对我讲话",
-    "action": {"arguments": "{}", "name": "none"}
+    "action": {"arguments": "0", "name": "none"}
 }
 '''
 Userfewshot2 = '''User:小狗小狗你吃饭了吗'''
@@ -63,7 +64,7 @@ dogfewshot2= '''
 {
     "type": "chat",  
     "thougts": "他在对我讲话，小狗没有吃饭",
-    "action": {"arguments": "{}", "name": "wh"}
+    "action": {"arguments": "0", "name": "wh"}
 }
 '''
 
@@ -72,7 +73,7 @@ dogfewshot3= '''
 {
     "type": "game",  
     "thougts": "他在和我玩海龟汤，这个符合正确答案，他答对了",
-    "action": {"arguments": "{}", "name": "jmp"}
+    "action": {"arguments": "0", "name": "jmp"}
 }
 '''
 
@@ -100,7 +101,9 @@ def tool_choice(message, tools, history):
     #     model="gpt-4-0125-preview", messages=messages, tools=tools, tool_choice="auto"
     # )
     completion = client.chat.completions.create(
-        model="glm-4", messages=messages, tools=tools, tool_choice="auto"
+        # model="glm-4", messages=messages, tools=tools, tool_choice="auto"
+        model="glm-4", messages=messages, 
+        
     )
 
     try:
@@ -109,6 +112,7 @@ def tool_choice(message, tools, history):
         
         print(f"-------------{choice}")
         fixed_choice = ensure_json_wrapped_with_braces(choice)
+        
     except Exception as e:
         print("小狗想说人话，但是失败了，因为建国后动物不许成精。")
 

@@ -16,7 +16,7 @@ def tool_choice(prompt, message, tools, history):
     ]
 
     completion = client.chat.completions.create(
-        model="gpt-4-0125-preview", messages=messages, tools=tools, tool_choice="auto"
+        model="gpt-3.5-turbo", messages=messages, tools=tools, tool_choice="auto"
     )
 
     return completion.choices[0].message.tool_calls[0].function

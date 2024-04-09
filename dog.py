@@ -10,8 +10,10 @@ goodPorts = None
 
 # Set to True if you are using a real device
 DEVICE = False
+TIMETEST = True
 
 def on_message(message):
+    timestamp = time.time()
     result = ""
     if message:
         for i in message["ws"]:
@@ -28,6 +30,8 @@ def on_message(message):
         history.append({"role": "user", "content": result})
         arguments = json.loads(tool.arguments)
         print(f"选择了{tool}")
+        if TIMETEST:
+            print("LLM返回耗时: ", time.time() - timestamp, "s")
 
         if DEVICE:
             # Send the command to the robot

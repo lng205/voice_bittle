@@ -163,9 +163,7 @@ def tool_choice(message, tools, history):
     #     model="gpt-4-0125-preview", messages=messages, tools=tools, tool_choice="auto"
     # )
     completion = client.chat.completions.create(
-        # model="glm-4", messages=messages, tools=tools, tool_choice="auto"
-        model="glm-4", messages=messages, 
-        
+        model="gpt-3.5-turbo", messages=messages, tools=tools, tool_choice="auto"
     )
 
     try:

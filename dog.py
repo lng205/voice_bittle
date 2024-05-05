@@ -10,43 +10,49 @@ import time
 history = []
 goodPorts = None
 
+# Set to True if you are using a real device
+DEVICE = False
+TIMETEST = True
+
 def on_message(message):
+    timestamp = time.time()
     result = ""
     if message:
         for i in message["ws"]:
             for w in i["cw"]:
                 result += w["w"]
-        result = result.strip(",。！？")
+        result = result.strip(",。！＄1�7")
 
     if result:
         print("识别结果: " + result)
-
-        # Beeping to indicate that the robot is listening
-        # global goodPorts
-        # sendCommand(goodPorts, "b", [10, 4])
 
         # Ask LLM to choose a tool
         global history
         tool = tool_choice(result, tools, history)
         history.append({"role": "user", "content": result})
         arguments = json.loads(tool.arguments)
-        print(f"选择了{tool}")
+        print(f"选择了{{tool}")
+        if TIMETEST:
+            print("LLM返回耗时: ", time.time() - timestamp, "s")
 
-        # Send the command to the robot
-        if not arguments:
-            sendCommand(goodPorts, "k" + tool.name)
-        else:
-            sendCommand(goodPorts, tool.name, eval(arguments["data"]))
+        if DEVICE:
+            # Send the command to the robot
+            if not arguments:
+                sendCommand(goodPorts, "k" + tool.name)
+            else:
+                sendCommand(goodPorts, tool.name, eval(arguments["data"]))
 
 
 if __name__ == "__main__":
-    goodPorts = initBittle()
+    if DEVICE:
+        goodPorts = initBittle()
     audio_streamer = AudioStreamer(callback=on_message)
-    print("开始录音")
+    print("弢�始录韄1�7")
     try:
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
         audio_streamer.close()
-        closeBittle(goodPorts)
+        if DEVICE:
+            closeBittle(goodPorts)
         print("结束程序")

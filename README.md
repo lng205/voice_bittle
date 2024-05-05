@@ -14,11 +14,8 @@ This projects intends to create a demo of a voice assistant for Bittle. The voic
 8. [ ] Refine texts prior to their submission to the LLM
 9. [x] Address the issue of the voice recognition server terminating the connection
 10. [x] Emit preliminary feedback pending the LLM's reply
-11. [ ] (Experimental) Configure the voice recognition server to discern the speaker's identity, thereby enabling it to exclusively acknowledge commands issued by the designated speaker
-12. [ ] Enable the flip body feature
-13. [ ] Design a more realistic idle state
-14. [ ] Design a better prompt
-15. [ ] Combine the speech detection feature into the main program
+11. [x] Design a more realistic idle state
+12. [ ] Design a better prompt
 
 ## How to use
 
